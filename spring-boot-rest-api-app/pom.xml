@@ -32,6 +32,15 @@
 
 	</dependencies>
 
+	<repositories>
+		<repository>
+			<id>my-app-virtual-snapshot</id>
+			<name>my-app-virtual-snapshot</name>
+			<url>http://jfrog-artifactory-oss.devops.svc.cluster.local:8081/artifactory/my-app-virtual-snapshot/</url>
+			<layout>default</layout>
+		</repository>
+	</repositories>
+
 	<distributionManagement>
 		<repository>
 			<uniqueVersion>false</uniqueVersion>
@@ -41,7 +50,6 @@
 			<layout>default</layout>
 		</repository>
 	</distributionManagement>
-
 
 	<build>
 		<plugins>

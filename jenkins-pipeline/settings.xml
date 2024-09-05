@@ -1,0 +1,43 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <servers>
+        <server>
+            <id>my-app-virtual-snapshot</id>
+            <username>admin</username>
+            <password>{+I9hVnSsEqoHuMMUbaSw/9qXW2albE9BbitUDWQ7a8M=}</password>
+        </server>
+        <server>
+            <id>my-app-central-snapshot</id>
+            <username>admin</username>
+            <password>{+I9hVnSsEqoHuMMUbaSw/9qXW2albE9BbitUDWQ7a8M=}</password>
+        </server>
+    </servers>
+
+    <profiles>
+        <profile>
+            <id>my-app</id>
+            <repositories>
+                <repository>
+                    <id>my-app-virtual-snapshot</id>
+                    <name>my-app-virtual-snapshot</name>
+                    <url>http://jfrog-artifactory-oss.devops.svc.cluster.local:8081/artifactory/my-app-virtual-snapshot/</url>
+                    <layout>default</layout>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
+
+    <activeProfiles>
+        <activeProfile>my-app</activeProfile>
+    </activeProfiles>
+
+    <mirrors>
+        <mirror>
+            <id>my-app-central-snapshot</id>
+            <mirrorOf>*</mirrorOf>
+            <url>http://jfrog-artifactory-oss.devops.svc.cluster.local:8081/artifactory/my-app-central-snapshot</url>
+            <name>Artifactory</name>
+            <blocked>false</blocked>
+        </mirror>
+    </mirrors>
+</settings>

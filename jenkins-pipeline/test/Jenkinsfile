@@ -1,0 +1,27 @@
+pipeline {
+  agent {
+    kubernetes {
+      inheritFrom 'graalvm-22-muslib-maven-jenkins-agent-template'
+    }
+  }
+  stages {
+    stage('Clone Application Git Repo') {
+      steps {
+        container('builder') {
+          git branch: 'main', changelog: false, poll: false, url: 'https://github.com/developerhelperhub/spring-boot-graalvm-jenkins-pipeline.git'
+        }
+      }
+    }  
+    stage('Build Native Image and Compress') {
+      steps {
+        container('builder') {
+          sh '''
+            cd spring-boot-rest-api-app
+            mvn deploy 
+            ls
+          '''
+        }
+      }
+    }
+  }
+}

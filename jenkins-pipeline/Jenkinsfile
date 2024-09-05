@@ -1,0 +1,61 @@
+pipeline {
+  agent {
+    kubernetes {
+      inheritFrom 'graalvm-22-muslib-maven-jenkins-agent-template'
+    }
+  }
+  stages {
+    stage('Clone Application Git Repo') {
+      steps {
+        container('builder') {
+          git branch: 'main', changelog: false, poll: false, url: 'https://github.com/developerhelperhub/spring-boot-graalvm-jenkins-pipeline.git'
+        }
+      }
+    }  
+    stage('Build Native Image and Compress') {
+      steps {
+        container('builder') {
+          sh '''
+            cd spring-boot-rest-api-app
+            mvn verify clean -Pnative native:compile
+            upx -7 -k target/app-native-binary
+          '''
+        }
+      }
+    }
+    stage('Build Docker Image and Push') {
+      steps {
+        container('docker') {
+          sh '''
+            cd spring-boot-rest-api-app
+            ls
+            docker build -t {your-docker-hub-account}/spring-boot-startup-performance:latest .
+          '''
+        }
+      }
+    }
+    stage('Push Docker Image') {
+      steps {
+        withCredentials([string(credentialsId: 'docker-access-token', variable: 'password')]) {
+          container('docker') {
+            sh 'docker login -u {your-docker-hub-account} -p ${password}'
+          }
+        }
+      }
+    }
+    stage('Push-Images-Docker-to-DockerHub') {
+      steps {
+        container('docker') {
+          sh 'docker push {your-docker-hub-account}/spring-boot-startup-performance:latest'
+        }
+      }
+    }
+  }
+  post {
+      always {
+        container('docker') {
+          sh 'docker logout'
+        }
+      }
+  }
+}

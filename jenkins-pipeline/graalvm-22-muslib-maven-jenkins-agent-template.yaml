@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: graalvm-22-muslib-maven-jenkins-agent-template
+  labels:
+    app: jenkins-agent
+spec:
+  containers:
+    # This container is used to build the native image and maven related configuration
+  - name: builder
+    image: developerhelperhub/graalvm-22-muslib-maven:latest
+    command:
+    - cat
+    tty: true
+    volumeMounts:
+    - name: maven-credentials
+      mountPath: /root/.m2/settings-security.xml
+      subPath: settings-security.xml
+    - name: maven-settings
+      mountPath: /root/.m2/settings.xml
+      subPath: settings.xml
+    - name: maven-repo
+      mountPath: /root/.m2
+  # This container is used to connect the docker engine to manage docker process. Here, local docker engine is connecting. We can use remote docker egine 
+  - name: docker
+    image: docker:latest
+    env:
+    - name: DOCKER_HOST
+      value: "tcp://172.17.0.1:2375"
+    command:
+    - cat
+    tty: true
+    volumeMounts:
+      - mountPath: /var/run/docker.sock
+        name: docker-sock
+  volumes:
+  - name: maven-repo
+    persistentVolumeClaim:
+      claimName: maven-repo-pvc
+  - name: maven-settings
+    configMap:
+      name: maven-settings
+  - name: maven-credentials
+    secret:
+      secretName: maven-credentials
+  - name: docker-sock
+    hostPath:
+      path: /var/run/docker.sock   
